@@ -1,0 +1,7 @@
+[package]
+name = "inventory"
+version = "0.1.0"
+authors = ["Nick Benoit <nick.benoit14@gmail.com>"]
+
+[dependencies]
+rusqlite = "0.13.0"
