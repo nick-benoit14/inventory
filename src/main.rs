@@ -7,6 +7,7 @@ use std::io::{self, Read, Write};
 struct Item {
     id: Option<i32>,
     name: String,
+    notes: Option<String>,
     necessity: i32,
     quantity: Option<u32>,
 }
@@ -40,7 +41,8 @@ fn main() {
         ("name", "What is the item name?"),
         ("necessity", "What is the item necessity?"),
         ("quantity", "Does the item have a quantity?"),
-        ("categories", "What categories does it belong to?")
+        ("categories", "What categories does it belong to?"),
+        ("notes", "Any notes about it?"),
     ];
 
     let answers: Vec<(String, String)> = questions.into_iter().map(|q| {
@@ -54,6 +56,10 @@ fn main() {
     let mut item = Item {
       id: None,
       name: String::from((&answers[0].1).trim()),
+      notes: match answers[4].1.trim().is_empty() {
+       true => { None },
+       false => Some(String::from(answers[4].1.trim()))
+      },
       necessity: match answers[1].1.trim().parse::<i32>() {
        Ok(x) => { x },
        Err(_) => { 0 }
@@ -67,8 +73,8 @@ fn main() {
     };
 
     conn.execute(
-        "INSERT INTO items(name, necessity, quantity) VALUES (?1, ?2, ?3)", &[
-         &item.name, &item.necessity, &item.quantity
+        "INSERT INTO items(name, notes, necessity, quantity) VALUES (?1, ?2, ?3, ?4)", &[
+         &item.name, &item.notes, &item.necessity, &item.quantity
     ]).unwrap();
 
     item.id = Some(get_id(&conn));
